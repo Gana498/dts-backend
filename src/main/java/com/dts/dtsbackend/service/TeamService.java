@@ -47,4 +47,53 @@ public class TeamService {
     public boolean existsById(Long id) {
         return teamRepository.existsById(id);
     }
+    
+    // Get team members who report to a specific person
+    public List<Team> getTeamMembersByReportsTo(Long reportsTo) {
+        return teamRepository.findByReportsTo(reportsTo);
+    }
+    
+    // Get all top-level team members (CEOs/founders)
+    public List<Team> getTopLevelTeamMembers() {
+        return teamRepository.findByReportsToIsNull();
+    }
+    
+    // Validate if a manager exists (for hierarchy validation)
+    public boolean isValidManager(Long managerId) {
+        return managerId == null || teamRepository.existsById(managerId);
+    }
+    
+    // Generate default avatar if not provided
+    public String generateDefaultAvatar(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return "https://via.placeholder.com/150/0066CC/FFFFFF?text=?";
+        }
+        
+        String[] nameParts = name.trim().split("\\s+");
+        String initials = "";
+        
+        if (nameParts.length >= 2) {
+            initials = nameParts[0].substring(0, 1).toUpperCase() + 
+                      nameParts[nameParts.length - 1].substring(0, 1).toUpperCase();
+        } else if (nameParts.length == 1) {
+            initials = nameParts[0].substring(0, Math.min(2, nameParts[0].length())).toUpperCase();
+        }
+        
+        return "https://via.placeholder.com/150/0066CC/FFFFFF?text=" + initials;
+    }
+    
+    // Add team member with validation and avatar generation
+    public Team addTeamMember(Team team) {
+        // Validate manager exists if reportsTo is provided
+        if (!isValidManager(team.getReportsTo())) {
+            throw new IllegalArgumentException("Invalid manager ID: " + team.getReportsTo());
+        }
+        
+        // Generate avatar if not provided
+        if (team.getAvatar() == null || team.getAvatar().trim().isEmpty()) {
+            team.setAvatar(generateDefaultAvatar(team.getName()));
+        }
+        
+        return teamRepository.save(team);
+    }
 }

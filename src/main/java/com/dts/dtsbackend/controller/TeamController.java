@@ -145,4 +145,97 @@ public class TeamController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * Add a new team member with validation
+     * @param team Team member data
+     * @return Created team member
+     */
+    @PostMapping("/add-team-member")
+    public ResponseEntity<?> addTeamMember(@RequestBody Team team) {
+        try {
+            // Validate required fields
+            if (team.getName() == null || team.getName().trim().isEmpty()) {
+                return new ResponseEntity<>("Name is required", HttpStatus.BAD_REQUEST);
+            }
+            if (team.getPosition() == null || team.getPosition().trim().isEmpty()) {
+                return new ResponseEntity<>("Position is required", HttpStatus.BAD_REQUEST);
+            }
+            if (team.getDescription() == null || team.getDescription().trim().isEmpty()) {
+                return new ResponseEntity<>("Description is required", HttpStatus.BAD_REQUEST);
+            }
+            
+            // Validate email format if provided
+            if (team.getEmail() != null && !team.getEmail().trim().isEmpty()) {
+                String emailRegex = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+                if (!team.getEmail().matches(emailRegex)) {
+                    return new ResponseEntity<>("Invalid email format", HttpStatus.BAD_REQUEST);
+                }
+            }
+            
+            // Validate LinkedIn URL if provided
+            if (team.getLinkedin() != null && !team.getLinkedin().trim().isEmpty()) {
+                if (!team.getLinkedin().contains("linkedin.com")) {
+                    return new ResponseEntity<>("Invalid LinkedIn URL", HttpStatus.BAD_REQUEST);
+                }
+            }
+            
+            Team savedTeam = teamService.addTeamMember(team);
+            return new ResponseEntity<>(savedTeam, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to add team member: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * Get team members who report to a specific person
+     * @param managerId Manager's ID
+     * @return List of team members reporting to the manager
+     */
+    @GetMapping("/reports-to/{managerId}")
+    public ResponseEntity<List<Team>> getTeamMembersByReportsTo(@PathVariable("managerId") Long managerId) {
+        try {
+            List<Team> teamMembers = teamService.getTeamMembersByReportsTo(managerId);
+            if (teamMembers.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(teamMembers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * Get all top-level team members (CEOs/founders)
+     * @return List of top-level team members
+     */
+    @GetMapping("/top-level")
+    public ResponseEntity<List<Team>> getTopLevelTeamMembers() {
+        try {
+            List<Team> teamMembers = teamService.getTopLevelTeamMembers();
+            if (teamMembers.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(teamMembers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
+     * Validate if a team member exists (for manager validation)
+     * @param id Team member ID to validate
+     * @return Validation response
+     */
+    @GetMapping("/validate/{id}")
+    public ResponseEntity<Boolean> validateTeamMember(@PathVariable("id") Long id) {
+        try {
+            boolean exists = teamService.existsById(id);
+            return new ResponseEntity<>(exists, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

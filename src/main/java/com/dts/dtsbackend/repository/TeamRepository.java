@@ -16,4 +16,10 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     
     // Find all team members ordered by id
     List<Team> findAllByOrderByIdAsc();
+    
+    // Find team members who report to a specific person
+    List<Team> findByReportsTo(Long reportsTo);
+    
+    // Find all top-level team members (CEOs/founders)
+    List<Team> findByReportsToIsNull();
 }

@@ -35,18 +35,32 @@ The DTS Backend application provides a REST API for managing team member informa
 - **URL**: `GET /api/team/search/name?name={name}`
 - **Description**: Search team members by name
 
+### Add Team Member (NEW)
+- **URL**: `POST /api/team/add-team-member`
+- **Description**: Add a new team member with validation and hierarchy support
+- **Request Body**: JSON object with team member data including reportsTo field
+
+### Team Hierarchy Endpoints (NEW)
+- **URL**: `GET /api/team/reports-to/{managerId}`
+- **Description**: Get all team members who report to a specific manager
+- **URL**: `GET /api/team/top-level`
+- **Description**: Get all top-level team members (CEOs/founders)
+- **URL**: `GET /api/team/validate/{id}`
+- **Description**: Validate if a team member exists (useful for manager validation)
+
 ## JSON Response Format
 Each team member object contains the following fields:
 
 ```json
 {
     "id": 1,
-    "name": "John Smith",
-    "position": "Senior Software Engineer",
-    "description": "Experienced full-stack developer with expertise in Java, Spring Boot, and React. Passionate about clean code and modern development practices.",
-    "avatar": "https://via.placeholder.com/150/0066CC/FFFFFF?text=JS",
-    "email": "john.smith@dts.com",
-    "linkedin": "https://linkedin.com/in/johnsmith"
+    "name": "DHARMA TEJA NERALLA",
+    "position": "CEO & Founder",
+    "description": "Experienced full-stack developer with expertise in Python, Django, and React. Passionate about clean code and modern development practices.",
+    "avatar": "https://via.placeholder.com/150/0066CC/FFFFFF?text=DT",
+    "email": "dharmateja@dts.com",
+    "linkedin": "https://www.linkedin.com/in/dharma-teja-neralla-490072255",
+    "reportsTo": null
 }
 ```
 
@@ -55,9 +69,10 @@ Each team member object contains the following fields:
 - `name`: Team member's full name (required, max 100 chars)
 - `position`: Job title/position (required, max 100 chars)
 - `description`: Detailed description of the team member (optional, text)
-- `avatar`: URL to profile image (optional, max 500 chars)
+- `avatar`: URL to profile image (optional, max 500 chars, auto-generated if not provided)
 - `email`: Email address (optional, max 100 chars)
 - `linkedin`: LinkedIn profile URL (optional, max 200 chars)
+- `reportsTo`: ID of the manager this person reports to (optional, null for top-level)
 
 ## Sample Data
 The application comes pre-loaded with 5 sample team members for testing purposes.

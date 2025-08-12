@@ -27,12 +27,15 @@ public class DataInitializer implements CommandLineRunner {
             "DHARMA TEJA NERALLA",
             "CEO & Founder",
             "Experienced full-stack developer with expertise in Python, Django, and React. Passionate about clean code and modern development practices.",
-            "https://via.placeholder.com/150/0066CC/FFFFFF?text=JS",
-            "john.smith@dts.com",
-            "https://www.linkedin.com/in/dharma-teja-neralla-490072255 ");
+            "https://via.placeholder.com/150/0066CC/FFFFFF?text=DT",
+            "dharmateja@dts.com",
+            "https://www.linkedin.com/in/dharma-teja-neralla-490072255",
+            null // CEO level - no manager
+        );
         
-        // Save all team members
-        teamService.saveTeamMember(member1);
+        // Save the CEO first
+        Team savedCEO = teamService.saveTeamMember(member1);
+         
         System.out.println("Sample team data initialized successfully!");
     }
 }

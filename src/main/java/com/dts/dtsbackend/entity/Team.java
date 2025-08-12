@@ -28,6 +28,9 @@ public class Team {
     @Column(length = 200)
     private String linkedin;
     
+    @Column(name = "reports_to")
+    private Long reportsTo;
+    
     // Default constructor
     public Team() {}
     
@@ -46,6 +49,17 @@ public class Team {
         this.avatar = avatar;
         this.email = email;
         this.linkedin = linkedin;
+    }
+    
+    // Constructor with reportsTo
+    public Team(String name, String position, String description, String avatar, String email, String linkedin, Long reportsTo) {
+        this.name = name;
+        this.position = position;
+        this.description = description;
+        this.avatar = avatar;
+        this.email = email;
+        this.linkedin = linkedin;
+        this.reportsTo = reportsTo;
     }
     
     // Getters and Setters
@@ -105,6 +119,14 @@ public class Team {
         this.linkedin = linkedin;
     }
     
+    public Long getReportsTo() {
+        return reportsTo;
+    }
+    
+    public void setReportsTo(Long reportsTo) {
+        this.reportsTo = reportsTo;
+    }
+    
     @Override
     public String toString() {
         return "Team{" +
@@ -115,6 +137,7 @@ public class Team {
                 ", avatar='" + avatar + '\'' +
                 ", email='" + email + '\'' +
                 ", linkedin='" + linkedin + '\'' +
+                ", reportsTo=" + reportsTo +
                 '}';
     }
 }
